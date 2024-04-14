@@ -21,3 +21,20 @@ function getIntersection(A, B, C, D) {
 
   return null;
 }
+
+function carPolyCrashed(polygon1, polygon2) {
+  for (let i = 0; i < polygon1.length; i++) {
+    for (let j = 0; j < polygon2.length; j++) {
+      const crashPoint = getIntersection(
+        polygon1[i],
+        polygon1[(i + 1) % polygon1.length],
+        polygon2[j],
+        polygon2[(j + 1) % polygon2.length]
+      );
+      if (crashPoint) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
