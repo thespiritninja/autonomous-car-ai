@@ -1,5 +1,5 @@
 class Car {
-  constructor(x, y, width, height) {
+  constructor(x, y, width, height, controlType, maxSpeed = 5) {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -7,29 +7,37 @@ class Car {
 
     this.speed = 0;
     this.acceleration = 0.2;
-    this.maxSpeed = 6;
+    this.maxSpeed = maxSpeed;
     this.friction = 0.05;
     this.angle = 0;
-
-    this.sensor = new Sensor(this);
-    this.controls = new Controls();
+    if (controlType != "DUMMY") {
+      this.sensor = new Sensor(this);
+    }
+    this.controls = new Controls(controlType);
     this.polygon = {};
     this.crashed = false;
   }
 
-  update(roadBorders) {
+  update(roadBorders, traffic) {
     if (!this.crashed) {
       this.#move();
       this.polygon = this.#createPolygon();
-      this.crashed = this.#checkCrashed(roadBorders);
+      this.crashed = this.#checkCrashed(roadBorders, traffic);
     }
-    this.sensor.update(roadBorders);
+    if (this.sensor) {
+      this.sensor.update(roadBorders, traffic);
+    }
   }
   //We create a method to understand the polygon of the car
   //i.e the area of the car to be considered as offset from intersection of rays to avoid collision.
-  #checkCrashed(roadBorders) {
+  #checkCrashed(roadBorders, traffic) {
     for (let i = 0; i < roadBorders.length; i++) {
       if (carPolyCrashed(this.polygon, roadBorders[i])) {
+        return true;
+      }
+    }
+    for (let i = 0; i < traffic.length; i++) {
+      if (carPolyCrashed(this.polygon, traffic[i].polygon)) {
         return true;
       }
     }
@@ -100,7 +108,7 @@ class Car {
     this.y -= Math.cos(this.angle) * this.speed;
   }
 
-  draw(ctx) {
+  draw(ctx, color) {
     // ctx.save();
     // ctx.translate(this.x, this.y);
     // ctx.rotate(-this.angle);
@@ -113,9 +121,9 @@ class Car {
 
     //Now we draw the polygon instead of the rectangle:
     if (this.crashed) {
-      ctx.fillStyle = "gray";
-    } else {
       ctx.fillStyle = "black";
+    } else {
+      ctx.fillStyle = color;
     }
     ctx.beginPath();
     ctx.moveTo(this.polygon[0].x, this.polygon[0].y);
@@ -123,6 +131,8 @@ class Car {
       ctx.lineTo(this.polygon[i].x, this.polygon[i].y);
     }
     ctx.fill();
-    this.sensor.draw(ctx);
+    if (this.sensor) {
+      this.sensor.draw(ctx);
+    }
   }
 }
