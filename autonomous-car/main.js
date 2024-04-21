@@ -31,7 +31,12 @@ const traffic = [
   new Car(road.getLaneCenter(2), -600, 30, 50, "DUMMY", 3),
   new Car(road.getLaneCenter(1), -700, 30, 50, "DUMMY", 3),
   new Car(road.getLaneCenter(0), -800, 30, 50, "DUMMY", 3),
+  new Car(road.getLaneCenter(1), -1000, 30, 50, "DUMMY", 3),
   new Car(road.getLaneCenter(2), -800, 30, 50, "DUMMY", 3),
+  new Car(road.getLaneCenter(2), -1100, 30, 50, "DUMMY", 3),
+  new Car(road.getLaneCenter(2), -1400, 30, 50, "DUMMY", 3),
+  new Car(road.getLaneCenter(0), -1400, 30, 50, "DUMMY", 3),
+  new Car(road.getLaneCenter(1), -1500, 30, 50, "DUMMY", 3),
 ];
 
 animate();
@@ -46,11 +51,23 @@ document.addEventListener("keypress", (e) => {
 //Adding block to save tarzanBrain
 function saveTarzanBrain() {
   localStorage.setItem("bestTarzanBrain", JSON.stringify(tarzan.brain));
+  saveTarzanBraintoFile(tarzan.brain, "tarzanBrain.json");
 }
 function clearTarzanBrain() {
   localStorage.removeItem("bestTarzanBrain");
 }
-
+function saveTarzanBraintoFile(data, filename) {
+  const json = JSON.stringify(data);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 //Generate Cars to test parallelisation
 function generateCars(n) {
   const cars = [];
