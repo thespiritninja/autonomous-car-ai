@@ -41,8 +41,11 @@ function carPolyCrashed(polygon1, polygon2) {
 
 function getRGBA(value) {
   const alpha = Math.abs(value);
-  const R = value < 0 ? 0 : 255;
-  const G = R;
+  // const R = value < 0 ? 0 : 255;
+  // const G = R;
+  // const B = value > 0 ? 0 : 255;
+  const R = 0;
   const B = value > 0 ? 0 : 255;
+  const G = value < 0 ? 0 : 255;
   return "rgba(" + R + "," + G + "," + B + "," + alpha + ")";
 }
